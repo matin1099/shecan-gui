@@ -8,6 +8,8 @@
 */.test-scrips/
 
 
+#SHECAN PRIVATE CONFIG FILE
+*.shecanConfig
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
