@@ -7,7 +7,9 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 }
 
 # Get the active network adapter
-$adapter = Get-NetAdapter | Where-Object { $_.Status -eq "Up" } | Select-Object -First 1
+$adapter = Get-NetAdapter |
+    Where-Object { $_.Status -eq "Up" -and $_.Name -notmatch "vEthernet|Virtual" } |
+    Select-Object -First 1
 
 if ($adapter) {
     Write-Host "Reverting DNS settings to automatic for: $($adapter.Name)"

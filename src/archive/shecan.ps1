@@ -7,11 +7,14 @@ if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 }
 
 # Define your custom DNS addresses
-$preferredDNS = "78.22.122.101"
-$alternateDNS = "185.51.200.1"
+$preferredDNS = $args[0]
+$alternateDNS = if ($args.Count -ge 2) { $args[1] } else { "" }
 
 # Get the active network adapter
-$adapter = Get-NetAdapter | Where-Object { $_.Status -eq "Up" } | Select-Object -First 1
+$adapter = Get-NetAdapter |
+    Where-Object { $_.Status -eq "Up" -and $_.Name -notmatch "vEthernet|Virtual" } |
+    Select-Object -First 1
+
 
 if ($adapter) {
     Write-Host "Setting DNS for adapter: $($adapter.Name)"
