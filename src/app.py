@@ -1,7 +1,10 @@
+import subprocess,os , sys
+from loguru import logger as log
+
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout,
                              QHBoxLayout, QMainWindow, QLabel, QComboBox,
                              QPushButton, QLineEdit, )
-from traitlets.config import Config
+import configparser
 
 from dns_util import check_dns
 
@@ -9,14 +12,17 @@ from dns_util import check_dns
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        #reading DNS
+
+        self.config = configparser.ConfigParser()
+        self.config.read('setting.ini')
+
         self.status = check_dns()
 
 
         self.setWindowTitle('Shecan')
 
         # first container
-        # Contain two line two column
+        # Contain three line two column
         # left column label
         # right column GETTED DNS
 
@@ -90,35 +96,68 @@ class MainWindow(QMainWindow):
         Show Configur WIndow
         :return:
         """
-        self.cfg_window = ConfigWindow()
+        if self.cfg_window is None:
+            self.cfg_window = ConfigWindow()
         self.cfg_window.show()
 
 class ConfigWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Config')
-        self.title_line = QLabel(text='Insert New DNS Below')
 
+        config = configparser.ConfigParser()
+        config.read('setting.ini')
+        cfg_prof_list = config.sections()
+
+        self.setWindowTitle('Configure DNS')
+
+
+        self.profile_dns = QLabel(text='Profile:')
+        self.profile_combo_box = QComboBox()
+        self.profile_combo_box.addItems(cfg_prof_list)
         self.dns_line = QLabel(text='DNS:')
         self.dns_input = QLineEdit()
         self.alt_dns_line = QLabel(text='Alternate DNS:')
         self.alt_dns_input = QLineEdit()
 
         self.confirm_btn = QPushButton(text='Confirm',)
+        self.confirm_btn.clicked.connect(self.close)
 
         hbox1 = QHBoxLayout()
-        hbox1.addWidget(self.dns_line)
-        hbox1.addWidget(self.dns_input)
+        hbox1.addWidget(self.profile_dns)
+        hbox1.addWidget(self.profile_combo_box)
         hbox2 = QHBoxLayout()
-        hbox2.addWidget(self.alt_dns_line)
-        hbox2.addWidget(self.alt_dns_input)
+        hbox2.addWidget(self.dns_line)
+        hbox2.addWidget(self.dns_input)
+        hbox3 = QHBoxLayout()
+        hbox3.addWidget(self.alt_dns_line)
+        hbox3.addWidget(self.alt_dns_input)
         vbox = QVBoxLayout()
         vbox.addLayout(hbox1)
         vbox.addLayout(hbox2)
+        vbox.addLayout(hbox3)
         vbox.addWidget(self.confirm_btn)
         self.setLayout(vbox)
 
+def config_reader():
+    config = configparser.ConfigParser()
 
+    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    ini_path = os.path.join(script_dir, 'setting.ini')
+    if os.path.exists(ini_path):
+        config.read(ini_path)
+        log.success('Config file aquired.')
+    else:
+        log.warning('Not find!!')
+        log.info('Creating new config file...')
+        with open(ini_path, 'w') as configfile:
+            config['public_shecan'] = {
+                'dns': '178.22.122.100',
+                'alt_dns': '185.51.200.2'
+            }
+            config.write(configfile)
+            log.success('Config file created. with public shecan DNS')
+
+config_reader()
 app = QApplication([])
 
 window = MainWindow()
