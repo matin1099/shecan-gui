@@ -1,10 +1,10 @@
 import subprocess,os , sys
+import config
 from loguru import logger as log
 
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout,
                              QHBoxLayout, QMainWindow, QLabel, QComboBox,
                              QPushButton, QLineEdit, )
-import configparser
 
 from dns_util import check_dns
 
@@ -13,8 +13,6 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.config = configparser.ConfigParser()
-        self.config.read('setting.ini')
 
         self.status = check_dns()
 
@@ -138,26 +136,8 @@ class ConfigWindow(QWidget):
         vbox.addWidget(self.confirm_btn)
         self.setLayout(vbox)
 
-def config_reader():
-    config = configparser.ConfigParser()
-
-    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-    ini_path = os.path.join(script_dir, 'setting.ini')
-    if os.path.exists(ini_path):
-        config.read(ini_path)
-        log.success('Config file aquired.')
-    else:
-        log.warning('Not find!!')
-        log.info('Creating new config file...')
-        with open(ini_path, 'w') as configfile:
-            config['public_shecan'] = {
-                'dns': '178.22.122.100',
-                'alt_dns': '185.51.200.2'
-            }
-            config.write(configfile)
-            log.success('Config file created. with public shecan DNS')
-
-config_reader()
+configFile = config.config_reader()
+print(configFile)
 app = QApplication([])
 
 window = MainWindow()
