@@ -1,27 +1,13 @@
 from loguru import logger as log
+import configparser
 
-import json
 import os
 import sys
 
 
 def config_reader():
-
-    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-    ini_path = os.path.join(script_dir, 'setting_shecanConfig.json')
-    if os.path.exists(ini_path):
-        log.success('Config file aquired.')
-
-        log.success('Load config file.')
-        with open(ini_path, 'r', encoding='utf-8') as f:
-            config_list = json.load(f)
-        log.success('pass config file.')
-        return config_list
-    else:
-        log.warning('Not find!!')
-        config_writer()
-        #re read Config file
-        _ = config_reader()
+    config = configparser.ConfigParser()
+    config.read('FILE.INI')
 
 
 def config_writer():

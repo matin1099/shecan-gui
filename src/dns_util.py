@@ -29,6 +29,7 @@ def check_dns():
     is_noDNS = False
 
     current_dns = get_dns_servers()
+    # print("Current DNS servers: ", current_dns)
     for item in current_dns:
         if '172.19.100.11' in item:
             is_noDNS = True
@@ -44,7 +45,7 @@ def check_dns():
 
     if is_noDNS and not (is_shecanPrivate1 or is_shecanPrivate2 or is_VPN):
         return ('no DNS')
-    elif is_shecanPrivate1 and is_shecanPrivate2:
+    elif is_shecanPrivate1 or is_shecanPrivate2:
         return ('private shecan')
     elif is_VPN:
         return ('VPN')
