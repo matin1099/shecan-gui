@@ -1,13 +1,34 @@
 import subprocess,os , sys
-import config
 from loguru import logger as log
 import configparser
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout,
                              QHBoxLayout, QMainWindow, QLabel, QComboBox,
                              QPushButton, QLineEdit, )
 
-from dns_util import check_dns
-from shecan_util import clean_shecan, shecan
+from src import config
+from src.dns_util import check_dns
+from src.shecan_util import clean_shecan, shecan
+
+
+
+
+
+
+#########
+###UNCOMMENT FOR other level####
+log.remove()
+###### uncomment  JUST ONE!!!!!!!!!!!!!!!
+# log.add(sys.stderr, level="TRACE")  # MOST OF EVENTS
+#log.add(sys.stderr, level="DEBUG")  # DEFAULT
+# log.add(sys.stderr, level="INFO")   # LESS LOG
+# log.add(sys.stderr, level="SUCCESS")# GOOD NEWS ONLY
+# log.add(sys.stderr, level="WARNING")# I LIKE IT UNTOLD!!
+# log.add(sys.stderr, level="ERROR")  # REASONS TO CALL MATIN!!!
+# log.add(sys.stderr, level="CRITICAL")# JUST NOTIFY ME IN DANGER
+#########
+
+
+
 
 # main window structure
 class MainWindow(QMainWindow):
@@ -17,7 +38,7 @@ class MainWindow(QMainWindow):
 
         self.status = check_dns()
 
-        ### this secton rewrite by a config reader funcs
+        ### this section rewrite by a config reader funcs
         self.dns_add = "78.22.122.101"
         self.alt_dns_add = "185.51.200.1"
 
@@ -166,12 +187,12 @@ class MainWindow(QMainWindow):
 #         vbox.addLayout(hbox3)
 #         vbox.addWidget(self.confirm_btn)
 #         self.setLayout(vbox)
+if __name__=='__main__':
+    configFile = config.config_reader()
+    #print(configFile)
+    app = QApplication([])
 
-configFile = config.config_reader()
-print(configFile)
-app = QApplication([])
+    window = MainWindow()
+    window.show()
 
-window = MainWindow()
-window.show()
-
-app.exec()
+    app.exec()
